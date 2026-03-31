@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Belanja Tracker</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@100..900&family=Manrope:wght@200..800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b89fff",
+                        "primary-container": "#ac8eff",
+                        "secondary": "#00e3fd",
+                        "surface-container": "#1a1a1a",
+                        "on-surface-variant": "#adaaaa",
+                        "background": "#0e0e0e",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .glass-card { 
+            background: rgba(38, 38, 38, 0.6); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(72, 72, 71, 0.15); 
+        }
+        .nav-active { 
+            background: linear-gradient(to top right, #7c3aed, #a78bfa) !important; 
+            color: white !important; 
+            box-shadow: 0 0 20px rgba(184, 159, 255, 0.3); 
+        }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+        .category-btn.selected {
+            background-color: #b89fff;
+            color: black;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .ai-glow { animation: pulse-glow 3s infinite ease-in-out; }
+        .auth-hidden { display: none !important; }
+        
+        .auth-tab.active {
+            color: white;
+            border-bottom: 2px solid #b89fff;
+        }
+    </style>
+</head>
+<body class="bg-[#0e0e0e] text-white font-body selection:bg-primary min-h-screen">
+
+    <header id="main-header" class="fixed top-0 w-full z-50 bg-[#0e0e0e]/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 border-b border-white/5 auth-hidden">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+                <img alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbP0H0iiakfoxbNevkl2z7NMnXllxNPjowdHM9JGOC_gJcaGUUer5aO7J3afcLOzDipcj3t8bgbb_oiZ60k28HpKuirftfkwWt_aLBOd6ift7peLNRYuhw_LmPOqVV7wBLLQuMHMHJo52VYX9eaxTT7kdwxOmu-kRideYKCzyCBstNsoRJNoKkXCJjUPj-DYJd2_07lYYUKufvx5UHjFKvez3vWPPl9G-SVZzUyl8AIF7YenHkyhzAW6jJ-_JdyenoG5aeSC7FW3mo" class="object-cover w-full h-full"/>
+            </div>
+            <h1 class="text-xl font-bold font-headline tracking-tighter uppercase">Belanja Tracker</h1>
+        </div>
+        <button onclick="alert('Tiada notifikasi baru.')" class="text-violet-400 hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">notifications</span>
+        </button>
+    </header>
+
+    <main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+        
+        <section id="page-auth" class="page-content active max-w-md mx-auto pt-10">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(184,159,255,0.3)]">
+                    <span class="material-symbols-outlined text-4xl text-black">blur_on</span>
+                </div>
+                <h2 id="auth-title" class="text-4xl font-headline font-bold mb-2">Welcome Back</h2>
+                <p class="text-on-surface-variant text-sm">Access your Belanja Tracker.</p>
+            </div>
+
+            <div class="flex justify-center gap-8 mb-8 border-b border-white/5 text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+                <button onclick="toggleAuthMode('login')" id="tab-login" class="auth-tab active pb-2">Login</button>
+                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="auth-tab pb-2">Sign Up</button>
+            </div>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-6">
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">Email Address</label>
+                        <input type="email" id="auth-email" required placeholder="name@tracker.com" class="w-full bg-black/40 border border-white/5 rounded-xl py-4 px-4 focus:ring-1 focus:ring-primary outline-none text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">Password</label>
+                        <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-black/40 border border-white/5 rounded-xl py-4 px-4 focus:ring-1 focus:ring-primary outline-none text-white">
+                    </div>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full py-5 bg-gradient-to-r from-violet-600 to-primary rounded-full text-white font-bold text-lg shadow-xl active:scale-95 transition-all">
+                    Launch Dashboard
+                </button>
+            </form>
+        </section>
+
+        <section id="page-dashboard" class="page-content space-y-8">
+            <div class="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-[#20201f] to-[#131313] border border-white/5">
+                <div class="relative z-10 space-y-6">
+                    <div>
+                        <p class="font-label text-on-surface-variant tracking-[0.2em] text-xs mb-2 uppercase">Current Liquidity</p>
+                        <h2 id="display-total" class="font-headline text-5xl md:text-7xl font-bold">$0.00</h2>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">
+                            <span>Monthly Budget Limit</span>
+                            <span id="budget-percent">0%</span>
+                        </div>
+                        <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div id="budget-bar" class="h-full bg-primary shadow-[0_0_15px_#b89fff] transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <button onclick="showPage('add')" class="flex items-center gap-2 px-6 py-3 bg-primary text-black rounded-full font-bold active:scale-95 transition-all">
+                        <span class="material-symbols-outlined">add_circle</span> QUICK ADD
+                    </button>
+                </div>
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl">
+                    <span class="p-3 bg-secondary/10 text-secondary rounded-xl material-symbols-outlined mb-4 inline-block">today</span>
+                    <p class="text-on-surface-variant text-xs tracking-widest uppercase">Today's Spend</p>
+                    <h3 id="display-today" class="text-3xl font-headline font-bold">$0.00</h3>
+                </div>
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+                    <p class="text-on-surface-variant text-[10px] tracking-widest uppercase font-bold mb-4">Spending Velocity</p>
+                    <div id="velocity-chart" class="h-24 w-full flex items-end gap-1"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-headline font-bold uppercase tracking-widest text-sm">Recent Nodes</h4>
+                        <button onclick="showPage('history')" class="text-[10px] text-primary font-bold">VIEW ALL</button>
+                    </div>
+                    <div id="dashboard-recent" class="space-y-4"></div>
+                </div>
+                <div class="p-8 rounded-3xl bg-primary-container/20 border border-primary/20 relative overflow-hidden flex flex-col justify-center">
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-4 text-primary">
+                            <span class="material-symbols-outlined ai-glow">auto_awesome</span>
+                            <span class="font-label text-[10px] tracking-[0.3em] font-bold uppercase">Belanja Tracker AI</span>
+                        </div>
+                        <p id="ai-text" class="text-sm leading-relaxed text-primary-container font-medium">Sistem sedia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-add" class="page-content max-w-2xl mx-auto">
+            <header class="mb-10">
+                <span class="text-secondary font-label text-xs uppercase tracking-widest font-bold">New Entry</span>
+                <h2 class="text-5xl font-headline font-bold">Add Expense</h2>
+            </header>
+            <form id="expense-form" class="space-y-8" onsubmit="confirmTransaction(event)">
+                <div class="bg-surface-container rounded-2xl p-8 border border-white/5 focus-within:border-primary/50 transition-all">
+                    <label class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-4 block">Amount (MYR)</label>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-headline font-bold text-primary">$</span>
+                        <input id="input-amount" type="number" step="0.01" required placeholder="0.00" class="bg-transparent border-none p-0 text-6xl font-headline font-bold text-white w-full focus:ring-0 placeholder:text-white/10"/>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold ml-2">Category</p>
+                    <div id="category-container" class="flex flex-wrap gap-3">
+                        <button type="button" onclick="selectCategory(this, 'Food')" class="category-btn px-6 py-3 rounded-full glass-card">Food</button>
+                        <button type="button" onclick="selectCategory(this, 'Transport')" class="category-btn px-6 py-3 rounded-full glass-card">Transport</button>
+                        <button type="button" onclick="selectCategory(this, 'Bills')" class="category-btn px-6 py-3 rounded-full glass-card">Bills</button>
+                        <button type="button" onclick="selectCategory(this, 'Others')" class="category-btn px-6 py-3 rounded-full glass-card">Others</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-5 bg-gradient-to-r from-violet-600 to-primary rounded-full text-white font-bold text-lg shadow-xl active:scale-[0.98] transition-all">Confirm Transaction</button>
+            </form>
+        </section>
+
+        <section id="page-settings" class="page-content max-w-2xl mx-auto space-y-6">
+            <h2 class="text-4xl font-headline font-bold mb-8">Settings</h2>
+            <div class="flex items-center justify-between p-6 glass-card rounded-2xl">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined p-2 bg-black rounded-full text-secondary">account_balance_wallet</span>
+                    <div>
+                        <p class="text-sm font-medium">Monthly Budget Limit</p>
+                    </div>
+                </div>
+                <input id="budget-input" type="number" onchange="updateBudget(this.value)" placeholder="1000" class="w-24 bg-black/40 border-none rounded-lg text-right text-primary font-bold focus:ring-1 focus:ring-primary">
+            </div>
+            
+            <button onclick="handleLogout()" class="w-full py-4 border border-red-500/30 text-red-400 rounded-2xl hover:bg-red-500/10 transition-all flex items-center justify-center gap-2 font-bold">
+                <span class="material-symbols-outlined">logout</span> Log Out
+            </button>
+            
+            <button onclick="clearAllData()" class="w-full py-4 text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-white">Padam Semua Rekod</button>
+        </section>
+
+        <section id="page-history" class="page-content max-w-2xl mx-auto space-y-6">
+            <h2 class="text-4xl font-headline font-bold mb-8">History</h2>
+            <div id="history-list" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+    <nav id="main-nav" class="fixed bottom-0 left-0 w-full flex justify-around items-end pb-6 px-4 bg-[#0e0e0e]/90 backdrop-blur-2xl z-50 border-t border-white/5 auth-hidden">
+        <button onclick="showPage('dashboard')" id="nav-dashboard" class="nav-btn nav-active p-3 rounded-full mb-2">
+            <span class="material-symbols-outlined">grid_view</span>
+        </button>
+        <button onclick="showPage('history')" id="nav-history" class="nav-btn p-2 rounded-full text-neutral-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">history</span>
+        </button>
+        <button onclick="showPage('add')" id="nav-add" class="nav-btn p-2 rounded-full text-neutral-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-3xl">add_circle</span>
+        </button>
+        <button onclick="showPage('settings')" id="nav-settings" class="nav-btn p-2 rounded-full text-neutral-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+        </button>
+    </nav>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem('bt_users')) || [];
+        let transactions = JSON.parse(localStorage.getItem('belanja_tracker_data')) || [];
+        let monthlyBudget = localStorage.getItem('belanja_tracker_budget') || 1000;
+        
+        let selectedCategory = "";
+        let authMode = "login";
+
+        window.onload = function() {
+            const session = localStorage.getItem('bt_logged_in');
+            if (session === 'true') {
+                showPage('dashboard');
+            } else {
+                showPage('auth');
+            }
+        }
+
+        // FIX: Clear input fields when switching tabs
+        function toggleAuthMode(mode) {
+            authMode = mode;
+            const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const tabs = document.querySelectorAll('.auth-tab');
+
+            // Cuci form setiap kali tukar tab
+            document.getElementById('auth-form').reset();
+
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (mode === 'signup') {
+                title.innerText = "Create Account";
+                submitBtn.innerText = "Register Now";
+                document.getElementById('tab-signup').classList.add('active');
+            } else {
+                title.innerText = "Welcome Back";
+                submitBtn.innerText = "Launch Dashboard";
+                document.getElementById('tab-login').classList.add('active');
+            }
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            if (authMode === 'signup') {
+                const userExists = users.find(u => u.email === email);
+                if (userExists) return alert("Emel ini sudah berdaftar.");
+
+                users.push({ email, password });
+                localStorage.setItem('bt_users', JSON.stringify(users));
+                alert("Pendaftaran Berjaya! Sila login.");
+                toggleAuthMode('login');
+            } else {
+                const user = users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    localStorage.setItem('bt_logged_in', 'true');
+                    showPage('dashboard');
+                } else {
+                    alert("Emel atau Password salah.");
+                }
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Nak log keluar?")) {
+                localStorage.removeItem('bt_logged_in');
+                showPage('auth');
+            }
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            const header = document.getElementById('main-header');
+            const nav = document.getElementById('main-nav');
+
+            if (pageId === 'auth') {
+                header.classList.add('auth-hidden');
+                nav.classList.add('auth-hidden');
+            } else {
+                header.classList.remove('auth-hidden');
+                nav.classList.remove('auth-hidden');
+                
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('nav-active', 'mb-2', 'p-3');
+                    btn.classList.add('text-neutral-500', 'p-2');
+                });
+                
+                const activeBtn = document.getElementById('nav-' + pageId);
+                if(activeBtn) {
+                    activeBtn.classList.add('nav-active', 'mb-2', 'p-3');
+                    activeBtn.classList.remove('text-neutral-500', 'p-2');
+                }
+            }
+
+            if(pageId === 'dashboard') updateDashboard();
+            if(pageId === 'history') renderHistory();
+        }
+
+        function selectCategory(btn, cat) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCategory = cat;
+        }
+
+        function updateBudget(val) {
+            monthlyBudget = val;
+            localStorage.setItem('belanja_tracker_budget', val);
+            updateDashboard();
+        }
+
+        function confirmTransaction(event) {
+            event.preventDefault();
+            const amount = document.getElementById('input-amount').value;
+            if (!amount || amount <= 0 || !selectedCategory) return alert("Sila lengkapkan maklumat.");
+
+            const newTx = {
+                id: Date.now(),
+                amount: parseFloat(amount),
+                category: selectedCategory,
+                date: new Date().toLocaleDateString()
+            };
+
+            transactions.push(newTx);
+            localStorage.setItem('belanja_tracker_data', JSON.stringify(transactions));
+            document.getElementById('expense-form').reset();
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            selectedCategory = "";
+            showPage('dashboard');
+        }
+
+        function updateDashboard() {
+            const total = transactions.reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('display-total').innerText = `$${total.toFixed(2)}`;
+            
+            const todayDate = new Date().toLocaleDateString();
+            const todayTotal = transactions
+                .filter(tx => tx.date === todayDate)
+                .reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('display-today').innerText = `$${todayTotal.toFixed(2)}`;
+
+            const budgetPercent = Math.min((total / monthlyBudget) * 100, 100);
+            document.getElementById('budget-percent').innerText = `${budgetPercent.toFixed(0)}%`;
+            document.getElementById('budget-bar').style.width = `${budgetPercent}%`;
+            
+            const bar = document.getElementById('budget-bar');
+            if (budgetPercent > 85) {
+                bar.className = "h-full bg-red-500 shadow-[0_0_15px_red]";
+            } else {
+                bar.className = "h-full bg-primary shadow-[0_0_15px_#b89fff]";
+            }
+
+            const recentContainer = document.getElementById('dashboard-recent');
+            const lastThree = transactions.slice(-3).reverse();
+            recentContainer.innerHTML = lastThree.length ? lastThree.map(tx => `
+                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                    <span class="text-on-surface-variant">${tx.category}</span>
+                    <span class="font-bold text-red-400">-$${tx.amount.toFixed(2)}</span>
+                </div>
+            `).join('') : '<p class="text-[10px] text-on-surface-variant uppercase">Tiada rekod node.</p>';
+
+            const velocityChart = document.getElementById('velocity-chart');
+            velocityChart.innerHTML = "";
+            for(let i=0; i<7; i++) {
+                const bar = document.createElement('div');
+                bar.className = "flex-1 bg-primary/20 rounded-t-sm transition-all duration-1000";
+                const randomH = transactions.length > 0 ? (Math.random() * 90) + 10 : 10;
+                bar.style.height = `${randomH}%`;
+                velocityChart.appendChild(bar);
+            }
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            container.innerHTML = transactions.length ? transactions.map(tx => `
+                <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
+                    <div><p class="font-bold">${tx.category}</p><p class="text-xs text-on-surface-variant">${tx.date}</p></div>
+                    <p class="text-red-400 font-bold">-$${tx.amount.toFixed(2)}</p>
+                </div>
+            `).reverse().join('') : `<div class="text-center py-20 text-on-surface-variant">Tiada sejarah transaksi.</div>`;
+        }
+
+        function clearAllData() {
+            if(confirm("Padam semua data Belanja Tracker?")) {
+                transactions = [];
+                localStorage.removeItem('belanja_tracker_data');
+                updateDashboard();
+                renderHistory();
+            }
+        }
+    </script>
+</body>
+</html>
